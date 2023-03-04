@@ -1,0 +1,63 @@
+{
+  "name": "inote",
+  "private": true,
+  "version": "1.0.0",
+  "main": "main.js",
+  "author": {
+    "name": "ialtone"
+  },
+  "description": "支持Markdown的笔记软件",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "electron-builder",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "be-vue3-notification": "^0.0.6",
+    "md-editor-v3": "^2.8.1",
+    "vue": "^3.2.46"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "electron": "^23.1.0",
+    "electron-builder": "^23.6.0",
+    "vite": "^4.1.2",
+    "vue-router": "^4.1.6"
+  },
+  "build": {
+    "productName": "inote",
+    "appId": "xyz.ialtone.inote",
+    "copyright": "Copyright (c) 2023 ialtone",
+    "files": [
+      "dist",
+      "package.json",
+      "main.js",
+      "preload.js"
+    ],
+    "directories": {
+      "buildResources": "public",
+      "output": "build"
+    },
+    "win": {
+      "icon": "./public/logo.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "../public/logo.ico",
+      "uninstallerIcon": "../public/logo.ico",
+      "installerHeaderIcon": "../public/logo.ico"
+    }
+  }
+}

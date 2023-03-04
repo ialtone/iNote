@@ -1,2 +1,13 @@
-# iNote
-一款支持Markdown的笔记软件
+# my-notes
+
+## 安装依赖
+
+`npm install`
+
+## 启动Vite
+
+`npm run dev`
+
+## 启动Electron
+
+`npm start`
