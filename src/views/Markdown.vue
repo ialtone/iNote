@@ -1,68 +1,111 @@
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MdEditor from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
-import { inject } from 'vue';
+import Vditor from 'vditor';
+import 'vditor/dist/index.css';
+const vditor = ref(null);
 
 const notify = inject("notify")
 
-MdEditor.config({ editorConfig: { renderDelay: 20 } })
-
-const toolbars = ['italic', 'underline', 'bold', 'strikeThrough', '-', 'sub', 'sup', 'task', '-', 'link', 'image', 'table', '-', 'mermaid', 'emoji', '=', 'catalog'];
+let watchget = ref($settings.getsettingsData().watchget)
 let note = reactive({ title: '', content: '' })
 
 const route = useRoute()
 const router = useRouter()
 
 const index = route.params.index
-onMounted(async function () {
-    if (index == -1) return
-    if (index == -2) {
-        let file = $file.openfile()
-        if (file == false) {
-            router.back()
-        } else {
-            note.content = file
+
+onMounted(
+    async function () {
+        let data;
+
+        if (index != -1 && index != -2) {
+            data = (await $data.getNotes())[index]
+            note.title = data.title
+            note.content = data.content
         }
-        return
-    }
-    let data = (await $data.getNotes())[index]
-    note.title = data.title
-    note.content = data.content
-})
+
+        vditor.value = new Vditor('vditor', {
+            "mode": watchget.value,
+            "preview": {
+                "mode": "both"
+            },
+            //不进行缓存
+            cache: {
+                enable: false
+            },
+            height: 620,
+            toolbar: [],
+            after: () => {
+                vditor.value.setValue(note.content)
+            },
+        });
+
+        let savebtn = document.getElementById('save');
+        savebtn.addEventListener('click', () => {
+            note.content = vditor.value.getValue()
+            if (index == -1) { // 路径为-1则表示新建便签
+                $data.insertOne({ ...note })
+            } else if (index == -2) {
+                $data.insertOne({ ...note });
+                router.push('/editor/' + $data.getIndex())
+            }
+            else {
+                $data.updateOne(index, { ...note })
+            }
+            notify({
+                "type": 'success',
+                "title": '成功',
+                "message": '保存成功！ 😘',
+                "position": 'bottom-right',
+                "animation": 'rotation',
+            })
+        })
+        // -1 新建 -2 打开
+        if (index == -1) return
+        if (index == -2) {
+            let file = $file.openfile()
+            if (file == false) {
+                router.back()
+            } else {
+                note.title = ''
+                note.content = file
+            }
+            return
+        }
+    })
 
 const back = () => {
     router.back()
 }
 
-const save = () => {
-    if (index == -1) { // 路径为-1则表示新建便签
-        $data.insertOne({ ...note })
-    } else if (index == -2) {
-        $data.insertOne({ ...note });
-        router.push('/editor/' + $data.getIndex())
-    }
-    else {
-        $data.updateOne(index, { ...note })
-    }
-    notify({
-        "type": 'success',
-        "title": '成功',
-        "message": '保存成功！ 😘',
-        "position": 'bottom-right',
-        "animation": 'rotation',
-    })
-}
-
+// let save = () => {
+//     if (index == -1) { // 路径为-1则表示新建便签
+//         $data.insertOne({ ...note })
+//     } else if (index == -2) {
+//         $data.insertOne({ ...note });
+//         router.push('/editor/' + $data.getIndex())
+//     }
+//     else {
+//         $data.updateOne(index, { ...note })
+//     }
+//     notify({
+//         "type": 'success',
+//         "title": '成功',
+//         "message": '保存成功！ 😘',
+//         "position": 'bottom-right',
+//         "animation": 'rotation',
+//     })
+// }
 </script>
 <template>
     <div class="container">
         <div class="title-container">
+            <!-- <input> -->
             <input class="title" v-model="note.title" spellcheck="false" placeholder="输入标题..." />
         </div>
         <div class="content-container">
-            <md-editor v-model="note.content" :toolbars="toolbars" spellcheck="false" style="height: 600px;" />
+            <div id="vditor"></div>
         </div>
         <div class="button-container">
             <button class="button-left" id="cancel" @click="back">取消</button>
@@ -117,23 +160,11 @@ const save = () => {
     font-family: "微软雅黑";
 }
 
-/* .tinput {
-    grid-area: 1 / 1 / 2 / 2;
-    border: none;
-    outline: none;
-    border-right: 1px solid rgb(148, 146, 146);
-    resize: none;
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
+.web-editor-pre {
+    width: 100%;
+    min-height: 600px;
+    box-shadow: none;
 }
-
-.toutput {
-    grid-area: 1 / 2 / 2 / 3;
-    text-align: left;
-    overflow: scroll;
-    overflow-x: hidden;
-    margin-left: 1.5rem;
-} */
 
 .button-container {
     float: right;

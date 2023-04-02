@@ -26,7 +26,7 @@ const changeIndex = (index) => {
         </div>
         <!-- 每次选择后动态计算指示条的位置 -->
         <div class="indicator-bar" :style="{ 'top': activeIndex * 40 + (activeIndex + 1) * 5 + 'px' }"></div>
-    </div>
+    </div>  
 </template>
 
 <style scoped>

@@ -14,6 +14,9 @@ contextBridge.exposeInMainWorld('$app', {
 contextBridge.exposeInMainWorld('$data', {
   getNotes: () => ipcRenderer.invoke('get-notes-data'),
   getNotesSync: () => ipcRenderer.sendSync('get-note-data-Sync'),
+  saveNotes(data) {
+    ipcRenderer.send('save-note', data)
+  },
   updateOne(index, data) {
     ipcRenderer.send('update-note', index, data)
   },
@@ -30,6 +33,9 @@ contextBridge.exposeInMainWorld('$settings', {
   getsettingsData: () => ipcRenderer.sendSync('get-settings-data'),
   updatemarkdown() {
     ipcRenderer.send('update-markdown')
+  },
+  updatewatchget(methods) {
+    ipcRenderer.send('update-watchget',methods)
   }
 })
 

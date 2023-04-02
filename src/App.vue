@@ -1,10 +1,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-
 import Navigator from './components/Navigator.vue'
 import fold from './components/fold.vue'
 import Icon from './components/Icon.vue'
+import OneWord from './components/OneWord.vue'
 
 const router = useRouter()
 
@@ -18,6 +18,11 @@ const pages = reactive([
     name: '设置',
     icon: 'setting',
     path: '/settings'
+  },
+  {
+    name: '我的',
+    icon: 'my',
+    path: '/my'
   },
   {
     name: '关于',
@@ -41,6 +46,7 @@ const closeWindow = () => {
     <div class="side-panel">
       <h1 class="app-title">i笔记</h1>
       <Navigator class="navigator" :pages="pages" :defaultIndex="defaultIndex" @selected="changePage"></Navigator>
+      <OneWord class="oneword"></OneWord>
       <fold class="fold"></fold>
     </div>
     <div class="status-bar">
@@ -92,6 +98,14 @@ const closeWindow = () => {
   -webkit-app-region: no-drag;
   width: 100%;
   height: 100%
+}
+
+.oneword {
+  position: fixed;
+  width: 190px;
+  margin-top: 30px;
+  margin-left: 10px;
+  /* transform: scale(0.5); */
 }
 
 .content-panel {

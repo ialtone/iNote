@@ -4,7 +4,7 @@
 <template>
     <div>
         <div class="icon-container">
-            <img src="/public/logo.ico"/>
+            <img src="/public/logo.ico" draggable="false"/>
         </div>
         <h1 class="title">i笔记</h1>
         <p class="description">by ialtone</p>

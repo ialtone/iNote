@@ -41,7 +41,8 @@ const savefile = () => {
                 "animation": 'rotation',
             })
         } else {
-            let text = $data.getNotesSync()[Index].content
+            let note = $data.getNotesSync()[Index]
+            let text = note.title+"\n"+note.content
             $file.savefile(text);
         }
 
@@ -80,7 +81,7 @@ const savefile = () => {
 #menuToggle {
     display: block;
     position: relative;
-    top: 510px;
+    top: 465px;
     left: 30px;
 
     z-index: 1;

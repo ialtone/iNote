@@ -23,10 +23,10 @@ onMounted(refresh)
 const selected = (event, index) => {
     index = notesData.value[index].index
     if (event.target.tagName == 'path' || event.target.tagName == 'svg') { // 判断点击目标是否为删除按钮
-        if (confirm("确认删除？")) {
+        // if (confirm("确认删除？")) {
             $data.deleteOne(index)
             refresh() // 直接刷新页面会导致闪屏，所以得手动刷新数据
-        }
+        // }
     } else {
         if (markdown == true) { router.push('/markdown/' + index) }
         else {

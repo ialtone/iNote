@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const { log } = require('console')
 //输入存储
 const NOTE_PATH = path.join(__dirname, './data/notes.json')
 const SETTINGS_PATH = path.join(__dirname, './data/settings.json')
@@ -9,7 +10,7 @@ const SETTINGS_PATH = path.join(__dirname, './data/settings.json')
 if (!fs.existsSync(NOTE_PATH)) {
     fs.mkdirSync(path.join(__dirname, './data'))
     fs.writeFileSync(NOTE_PATH, '[]')
-    fs.writeFileSync(SETTINGS_PATH, '[{"markdown":true}]')
+    fs.writeFileSync(SETTINGS_PATH, '{"markdown":true,"watchget":"ir"}')
 }
 
 const getNotesData = () => JSON.parse(fs.readFileSync(NOTE_PATH))
@@ -34,11 +35,11 @@ const createWindow = () => {
         },
         icon: path.join(__dirname, './public/logo.ico')
     })
-    win.loadURL('http://localhost:8080/')
+    win.loadURL('http://localhost:8081/')
     // win.loadFile(path.join(__dirname, './dist/index.html'))
 
     //  开发者工具
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools()
 
 
 
@@ -47,6 +48,13 @@ const createWindow = () => {
         e.preventDefault();
         shell.openExternal(url);
     });
+    win.webContents.setWindowOpenHandler((data) => {
+        shell.openExternal(data.url)
+        return {
+            action: 'deny'
+        }
+    })
+
     win.on('ready-to-show', () => {
         win.show()
     })
@@ -55,6 +63,10 @@ const createWindow = () => {
 
     ipcMain.on('get-note-data-Sync', (event) => {
         event.returnValue = getNotesData()
+    })
+
+    ipcMain.on('save-note', (event, data) => {
+        fs.writeFileSync(NOTE_PATH, data)
     })
 
     ipcMain.on('insert-note', (event, data) => {
@@ -89,15 +101,19 @@ const createWindow = () => {
         settingsData.markdown = !settingsData.markdown
         fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settingsData))
     })
+    ipcMain.on('update-watchget', (event, methods) => {
+        let settingsData = getsettingsData()
+        settingsData.watchget = methods
+        fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settingsData))
+    })
 
     //文件操作
     ipcMain.on('openfile', (event) => {
         dialog.showOpenDialog({
             properties: ['openFile'],
-            filters: [{ name: 'Markdown', extensions: ['md'] }]
+            filters: [{ name: 'Markdown', extensions: ['md'] }, { name: 'txt', extensions: ['txt'] }]
         }).then(res => {
             let text = fs.readFileSync(res.filePaths[0]).toString()
-            // console.log(text)
             event.returnValue = text
         }).catch(err => {
             event.returnValue = false
@@ -107,7 +123,8 @@ const createWindow = () => {
 
     ipcMain.on('savefile', (event, message) => {
         let text = dialog.showSaveDialogSync({
-            filters: [{ name: 'Markdown', extensions: ['md'] }]
+            defaultPath: "ttt",
+            filters: [{ name: 'Markdown', extensions: ['md'] }, { name: 'txt', extensions: ['txt'] }]
         })
 
         try {
@@ -116,7 +133,6 @@ const createWindow = () => {
         } catch (err) {
             event.returnValue = false
         }
-
     })
 
 
