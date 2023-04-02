@@ -1,4 +1,6 @@
 # iNote -- 一款支持Markdown的笔记软件
+**招募志同道合的朋友以及想测试本软件的朋友，请邮箱联系ialtone@ialtone.xyz**
+**INote登录账号密码可联系邮箱获取测试资格。**
 主要页面展示：
 Markdown支持**所见即所得**、**即时渲染**和**分屏渲染**。
 ![](https://cdn.staticaly.com/gh/ialtone/ialtone@master/%E5%9B%BE%E5%BA%8A20230402191611.png)
